@@ -1,4 +1,4 @@
-# Boot text
+; Boot text
 mov ah, 0x0e
 mov al, 'U'
 int 0x10
@@ -23,16 +23,16 @@ int 0x10
 mov ah, 0x0e
 mov al, 'S'
 int 0x10
-# print new line
 mov ah, 0x0e
-mov al, 10
+mov al, 10 ; new line
 int 0x10
 mov ah, 0x0e
-mov al, 13
+mov al, 13 ; carriage return
 int 0x10
 
+; Prints unina-os description (stored from address Description_text)
 mov ah, 0x0e
-mov bx, Description_text + 0x7c00
+mov bx, Description_text + 0x7c00 ; the offset is always 0x7c00 I don't know why
 Print_description:
   mov al , [bx]
   cmp al, 0
@@ -43,7 +43,7 @@ Print_description:
 
 exit_description:
 
-# prints the alphabet
+; prints the alphabet
 mov ah, 0xe
 mov al, 'A' - 1
 print_alphabet:
