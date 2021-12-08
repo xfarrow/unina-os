@@ -1,4 +1,8 @@
-; Boot text (Unina-OS)
+;
+; REGION
+; Boot text (Unina-OS) 
+;
+;
 mov ah, 0x0e ; 0x0e must be in the ah in order to be able to print
 
 mov al, 'U'
@@ -31,7 +35,12 @@ int 0x10
 mov al, 13 ; carriage return
 int 0x10
 
+
+;
+; REGION
 ; Prints unina-os description (stored from address Description_text)
+;
+;
 mov ah, 0x0e
 mov bx, Description_text + 0x7c00 ; the offset is always 0x7c00 I don't know why. bx contains the value of the pointer
 Print_description:
@@ -58,7 +67,11 @@ Description_text:
 
 exit_description:
 
+;
+; REGION
 ; prints the alphabet
+;
+;
 mov ah, 0xe
 mov al, 'A' - 1
 print_alphabet:
@@ -69,7 +82,69 @@ print_alphabet:
   jmp print_alphabet
 exit_printing_alphabet:
 
-; bootable sector
+;
+; REGION
+; Simple stack operations
+;
+;
+mov bp, 0x8000 ; base pointer (tail)
+mov sp, 0x8000  ; stack pointer, same as tail since it's empty
+mov bh, 'A' 
+push bx  ; push onto stack register B
+
+mov bh, 'B'
+
+; print 'B' while 'A' being on stack
+mov al, 10 ; new line
+int 0x10
+int 0x10
+mov al, 13 ; carriage return
+int 0x10
+
+mov al, bh
+mov ah, 0x0e
+int 0x10
+
+pop bx
+
+; print value stored on stack
+mov al, bh
+mov ah, 0x0e
+int 0x10
+
+;
+; REGION
+; Procedure
+;
+;
+call Procedure ; the stack gets managed automatically thanks to pusha and popa
+mov ah, 0x0e 
+mov al, 'y'
+int 0x10
+jmp Exit
+
+Procedure: ; prints 5 times 'x'
+  mov ah, 0x0e 
+  mov al, 'x'
+  int 0x10 
+  int 0x10 
+  int 0x10 
+  int 0x10 
+  int 0x10
+  ret
+
+Exit: 
+mov ah, 0x0e 
+mov al, 'k'
+int 0x10
+
+
+
+;
+; REGION
+; Bootable sector
+;
+;
 jmp $ ; useless, jumps on the next instruction
 times 510-($-$$) db 0
 db 0x55, 0xaa
